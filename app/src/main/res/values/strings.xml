@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">MobileComputingCms</string>
+    <string name="post_title_help">Enter post title</string>
+    <string name="post_title_label">Post Title</string>
+    <string name="post_dec_label">Post Description</string>
+    <string-array name="list_item_array" id="ayy">
+        <item>Portal</item>
+        <item>Post</item>
+        <item>Settings</item>
+        <item>Help</item>
+        <item>About</item>
+    </string-array>
+    <string name="action_settings">Settings</string>
+    <string name="tab_text_1">World</string>
+    <string name="tab_text_2">Business</string>
+    <string name="tab_text_3">Technology</string>
+    <string name="tab_text_4">Science</string>
+    <string name="tab_text_5">Sports</string>
+    <string name="action_add">Add</string>
+    <string name="title_activity_portal">PortalActivity</string>
+
+    <string name="todo">TODO</string>
+    <string name="add_an_image">Add an image</string>
+    <string name="enter_title_post">Enter title post</string>
+</resources>
