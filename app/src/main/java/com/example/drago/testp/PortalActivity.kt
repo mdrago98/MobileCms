@@ -1,6 +1,8 @@
 package com.example.drago.testp
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.support.design.widget.TabLayout
 import android.support.v7.app.AppCompatActivity
 
@@ -8,21 +10,20 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.os.Bundle
-import android.os.Handler
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import com.example.drago.testp.handlers.DbWorkerThread
-import com.example.drago.testp.models.Listing
-import com.example.drago.testp.models.ListingDatabase
 
 import kotlinx.android.synthetic.main.activity_portal.*
-import kotlinx.android.synthetic.main.fragment_portal.*
+import android.widget.Toast
+import com.example.drago.testp.model.Listing
 import android.widget.AdapterView
-import com.example.drago.testp.adaptors.DataAdapter
+import android.widget.GridView
+import com.example.drago.testp.adaptors.DataAdaptor
 import org.jetbrains.anko.doAsync
 
 
@@ -37,6 +38,7 @@ class PortalActivity : AppCompatActivity() {
      * [android.support.v4.app.FragmentStatePagerAdapter].
      */
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
+    private var currentTab: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,6 +53,7 @@ class PortalActivity : AppCompatActivity() {
         container.adapter = mSectionsPagerAdapter
 
         container.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabs))
+        container.currentItem = intent.getIntExtra("tabNo", 0)
         tabs.addOnTabSelectedListener(TabLayout.ViewPagerOnTabSelectedListener(container))
 //        fab.setOnClickListener { view ->
 //            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -76,6 +79,7 @@ class PortalActivity : AppCompatActivity() {
             return true
         } else if (id == R.id.action_post) {
             val intent = Intent(this, PostActivity::class.java)
+            intent.putExtra("tabNo", container.currentItem)
             startActivity(intent)
             return true
         }
@@ -97,7 +101,6 @@ class PortalActivity : AppCompatActivity() {
         }
 
         override fun getCount(): Int {
-            // Show 3 total pages.
             return 5
         }
     }
@@ -107,47 +110,34 @@ class PortalActivity : AppCompatActivity() {
      */
     class PlaceholderFragment : Fragment() {
 
-        private var mDb: ListingDatabase? = null
 
-        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+        override fun onCreateView(inflater: LayoutInflater, viewGroup: ViewGroup?,
                                   savedInstanceState: Bundle?): View? {
-            val rootView = inflater.inflate(R.layout.fragment_portal, container, false)
-            mDb = ListingDatabase.getInstance(inflater.context)
+            val rootView = inflater.inflate(R.layout.fragment_portal, viewGroup, false)
+            val tabs = activity?.findViewById<TabLayout>(R.id.tabs)
             doAsync {
-                val listingData = mDb?.listingDao()?.getAll()
-                if (listingData == null || listingData.isEmpty()) {
-                    Toast.makeText(inflater.context, "No data in db", Toast.LENGTH_SHORT).show()
-                } else {
-                    gridview.adapter = DataAdapter(inflater.context, listingData, null)
-                    gridview.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
-                        val selectedItem = parent.getItemAtPosition(position) as Listing
-                        val title = selectedItem.ListingTitle
-                        val description = selectedItem.ListingDescription
+                val lt = Listing.getListings(tabs!!.selectedTabPosition)
+                if (lt.isEmpty()) {
+                    Toast.makeText(this@PlaceholderFragment.requireContext(), "No data available my dude", Toast.LENGTH_SHORT).show()
+                }
+                val gridView = rootView.findViewById<GridView>(R.id.gridview)
+                gridView.adapter = DataAdaptor(inflater.context, lt)
+
+                gridView.onItemClickListener = AdapterView.OnItemClickListener { parent, _, position, _ ->
+                    val selectedItem = parent.getItemAtPosition(position) as Listing
+                    val title = selectedItem.listingTitle
+                    val description = selectedItem.listingDescription
 
 
-                        Toast.makeText(context!!.applicationContext, "Viewing Post of $title", Toast.LENGTH_SHORT).show()
-                        val n = Intent(activity, ListingDescriptionView::class.java)
-                        n.putExtra("Title", title)
-                        n.putExtra("Description", description)
-                        activity!!.startActivity(n)
-                    }
+                    Toast.makeText(context!!.applicationContext, "Viewing Post of $title", Toast.LENGTH_SHORT).show()
+                    val n = Intent(activity, ListingDescriptionView::class.java)
+                    n.putExtra("Title", title.toString())
+                    n.putExtra("Description", description.toString())
+                    activity!!.startActivity(n)
                 }
             }
-//            mDbWorkerThread.postTask(task)
             return rootView
         }
-
-//        private fun bindDataWithUi(listingData: Listing?) {
-//            post_title_in.setText(listingData?.ListingTitle)
-//            post_desc_in.setText(listingData?.ListingDescription)
-//            image_chooser.setImageURI(listingData)
-////            mTempInC.text = weatherData?.tempInC.toString()
-////            mTempInF.text = weatherData?.tempInF.toString()
-////            mLatitude.text = weatherData?.lat.toString()
-////            mLongitude.text = weatherData?.lon.toString()
-////            mName.text = weatherData?.name
-////            mRegion.text = weatherData?.region
-//        }
 
 
         companion object {

@@ -7,27 +7,16 @@
     android:layout_height="match_parent"
     tools:context=".PortalActivity$PlaceholderFragment">
 
-    <GridView
+    <GridView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/gridview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:columnWidth="100dp"
+        android:columnWidth="90dp"
         android:numColumns="auto_fit"
-        android:verticalSpacing="24dp"
+        android:verticalSpacing="10dp"
         android:horizontalSpacing="10dp"
-        android:stretchMode="spacingWidthUniform"
+        android:stretchMode="columnWidth"
+        android:gravity="center"
         />
-
-    <ImageView
-        android:id="@+id/testing"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:contentDescription="@string/todo" />
-
-    <TextView
-        android:id="@+id/test"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 
 </android.support.constraint.ConstraintLayout>
