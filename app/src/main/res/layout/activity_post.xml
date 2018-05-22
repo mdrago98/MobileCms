@@ -81,6 +81,7 @@
         android:layout_gravity="end|bottom"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
+        android:tint="#FFFF"
         android:src="@drawable/ic_check_black_24dp"
         app:elevation="2dp"
         android:clickable="true"

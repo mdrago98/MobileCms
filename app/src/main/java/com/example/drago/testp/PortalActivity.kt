@@ -3,27 +3,18 @@ package com.example.drago.testp
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.support.design.widget.TabLayout
-import android.support.v7.app.AppCompatActivity
-
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentPagerAdapter
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat
+import android.support.design.widget.TabLayout
+import android.support.v4.app.*
 import android.support.v4.content.ContextCompat
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
-
-import kotlinx.android.synthetic.main.activity_portal.*
-import android.widget.Toast
-import com.example.drago.testp.model.Listing
+import android.support.v7.app.AppCompatActivity
+import android.view.*
 import android.widget.AdapterView
-import android.widget.GridView
+import android.widget.Toast
 import com.example.drago.testp.adaptors.DataAdaptor
+import com.example.drago.testp.model.Listing
+import kotlinx.android.synthetic.main.activity_portal.*
+import kotlinx.android.synthetic.main.fragment_portal.*
 import org.jetbrains.anko.doAsync
 
 
@@ -54,7 +45,27 @@ class PortalActivity : AppCompatActivity() {
 
         container.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabs))
         container.currentItem = intent.getIntExtra("tabNo", 0)
-        tabs.addOnTabSelectedListener(TabLayout.ViewPagerOnTabSelectedListener(container))
+        tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                currentTab = tab.position
+                container.currentItem = tab.position
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {
+
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab) {
+
+            }
+        })
+
+        if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                    10)
+        }
 //        fab.setOnClickListener { view ->
 //            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                    .setAction("Action", null).show()
@@ -62,6 +73,11 @@ class PortalActivity : AppCompatActivity() {
 
     }
 
+    override fun onBackPressed() {
+        val homeIntent = Intent(this, MainActivity::class.java)
+        startActivity(homeIntent)
+        super.onBackPressed()
+    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -76,6 +92,7 @@ class PortalActivity : AppCompatActivity() {
         val id = item.itemId
 
         if (id == R.id.action_settings) {
+
             return true
         } else if (id == R.id.action_post) {
             val intent = Intent(this, PostActivity::class.java)
@@ -92,12 +109,12 @@ class PortalActivity : AppCompatActivity() {
      * A [FragmentPagerAdapter] that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    inner class SectionsPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
+    inner class SectionsPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
 
         override fun getItem(position: Int): Fragment {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1)
+            return PlaceholderFragment.newInstance(position)
         }
 
         override fun getCount(): Int {
@@ -110,35 +127,35 @@ class PortalActivity : AppCompatActivity() {
      */
     class PlaceholderFragment : Fragment() {
 
-
         override fun onCreateView(inflater: LayoutInflater, viewGroup: ViewGroup?,
                                   savedInstanceState: Bundle?): View? {
-            val rootView = inflater.inflate(R.layout.fragment_portal, viewGroup, false)
-            val tabs = activity?.findViewById<TabLayout>(R.id.tabs)
-            doAsync {
-                val lt = Listing.getListings(tabs!!.selectedTabPosition)
-                if (lt.isEmpty()) {
-                    Toast.makeText(this@PlaceholderFragment.requireContext(), "No data available my dude", Toast.LENGTH_SHORT).show()
-                }
-                val gridView = rootView.findViewById<GridView>(R.id.gridview)
-                gridView.adapter = DataAdaptor(inflater.context, lt)
-
-                gridView.onItemClickListener = AdapterView.OnItemClickListener { parent, _, position, _ ->
-                    val selectedItem = parent.getItemAtPosition(position) as Listing
-                    val title = selectedItem.listingTitle
-                    val description = selectedItem.listingDescription
-
-
-                    Toast.makeText(context!!.applicationContext, "Viewing Post of $title", Toast.LENGTH_SHORT).show()
-                    val n = Intent(activity, ListingDescriptionView::class.java)
-                    n.putExtra("Title", title.toString())
-                    n.putExtra("Description", description.toString())
-                    activity!!.startActivity(n)
-                }
-            }
-            return rootView
+            return inflater.inflate(R.layout.fragment_portal, viewGroup, false)
         }
 
+        override fun onResume() {
+            if (context?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) } == PackageManager.PERMISSION_GRANTED) {
+                doAsync {
+                    val lt = Listing.getListings(arguments!!.getInt("section_number"))
+
+                    gridview.adapter = context?.let { DataAdaptor(it, lt) }
+
+                    gridview.onItemClickListener = AdapterView.OnItemClickListener { parent, _, position, _ ->
+                        val selectedItem = parent.getItemAtPosition(position) as Listing
+                        val editIntent = Intent(this@PlaceholderFragment.context, PostActivity::class.java)
+                        editIntent.putExtra("listingId", selectedItem.id)
+                        startActivity(editIntent)
+                    }
+                }
+            } else {
+                Toast.makeText(this.context, "No permissions granted", Toast.LENGTH_SHORT).show()
+            }
+            super.onResume()
+        }
+
+//        override fun onDestroy() {
+//            gridview.adapter = null
+//            super.onDestroy()
+//        }
 
         companion object {
             /**

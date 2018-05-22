@@ -6,8 +6,11 @@ import com.activeandroid.annotation.Table
 import com.activeandroid.query.Select
 
 
-@Table(name = "listing_table")
+@Table(name = "listing_table", id = "listingId")
 class Listing : Model() {
+
+    @Column(name = "id")
+    var listingId: Long? = null
 
     @Column(name = "title")
     var listingTitle: String? = null
@@ -34,6 +37,11 @@ class Listing : Model() {
 
             return Select().from(Listing::class.java).where("Tab = ?", index).execute()
             //return new Select().from(Listing.class).execute();
+        }
+
+        fun getListing(id: Long): Listing {
+            val temp: List<Listing> = Select().from(Listing::class.java).where("listingId = ?", id).execute()
+            return temp[0]
         }
 
         fun getListingImages(index: Int): Array<String?> {

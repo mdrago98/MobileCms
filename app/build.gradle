@@ -12,7 +12,7 @@ android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.example.drago.testp"
-        minSdkVersion 'P'
+        minSdkVersion 27
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
@@ -40,6 +40,7 @@ dependencies {
     implementation "android.arch.persistence.room:runtime:1.1.0"
     implementation "org.jetbrains.anko:anko-commons:0.10.4"
     implementation "org.jetbrains.anko:anko-design:0.10.4" // For SnackBars
+    implementation 'com.android.support:support-v4:27.1.1'
     kapt "android.arch.persistence.room:compiler:1.1.0"
     implementation 'com.android.support:cardview-v7:27.1.1'
     implementation 'com.michaelpardo:activeandroid:3.1.0-SNAPSHOT'

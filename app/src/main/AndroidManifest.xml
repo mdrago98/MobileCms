@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.drago.testp">
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
@@ -17,31 +18,51 @@
             android:name="com.activeandroid.content.ContentProvider"
             android:authorities="com.example.drago.testp"
             android:enabled="true"
-            android:exported="false">
-        </provider>
+            android:exported="false" />
+
         <meta-data
             android:name="AA_DB_NAME"
             android:value="Assigment_v1.db" />
         <meta-data
             android:name="AA_DB_VERSION"
-            android:value="4" />
+            android:value="9" />
         <meta-data
             android:name="AA_MODELS"
             android:value="com.example.drago.testp.model.Listing" />
 
+        <meta-data android:name="android.app.shortcuts"
+            android:resource="@xml/shortcuts" />
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity
             android:name=".PortalActivity"
             android:label="@string/title_activity_portal"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".PostActivity" />
-        <activity android:name=".ListingDescriptionView" />
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings" />
+        <activity
+            android:name=".HelpActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_help"
+            android:theme="@style/FullscreenTheme" />
+        <activity
+            android:name=".AboutActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_about"
+            android:theme="@style/FullscreenTheme"/>
     </application>
 
 </manifest>

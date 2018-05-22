@@ -29,7 +29,7 @@ class DataAdaptor(val mContext: Context, val listings: List<Listing>) : BaseAdap
         return listings.size
     }
 
-    override fun getItem(i: Int): Any {
+    override fun getItem(i: Int): Any? {
         return listings[i]
     }
 
@@ -44,7 +44,6 @@ class DataAdaptor(val mContext: Context, val listings: List<Listing>) : BaseAdap
             imageView = ImageView(mContext)
             imageView.layoutParams = ViewGroup.LayoutParams(-1, -1)
             imageView.scaleType = ImageView.ScaleType.CENTER_CROP
-//            imageView.setPadding(8, 8, 8, 8)
         } else {
             imageView = convertView as ImageView
         }
@@ -53,19 +52,5 @@ class DataAdaptor(val mContext: Context, val listings: List<Listing>) : BaseAdap
 
         return imageView
     }
-
-
-//    override fun getView(i: Int, view: View, viewGroup: ViewGroup): View {
-//        val dummyTextView = TextView(mContext)
-//        dummyTextView.text = listings[i].listingPic
-//
-//        title = listings[i].listingTitle
-//        val description = listings[i].listingDescription
-//
-//        id = Math.toIntExact(listings[i].id!!)
-//
-//        return dummyTextView
-//
-//    }
 
 }
